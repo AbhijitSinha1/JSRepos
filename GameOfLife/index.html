@@ -20,9 +20,10 @@
 			var game;
 			var timer;
 			var time;
-			var INTERVAL = 100;
+			var INTERVAL = 1000;
 			var LIMIT = 50;
 			var interval = INTERVAL;
+			var running = false;
 			var generateBoard = function(row, col, cells) {
 				var size = LIMIT * 10 / Math.max(row, col);
 				var ret = "";
@@ -46,7 +47,7 @@
 				var board = generateBoard(row, col, cells.map(function(cell) {return cell;}));//.map(function(cell) {return cell.getState();}));
 				div.innerHTML = board;
 				timeSpan.innerHTML = parseFloat(time).toFixed(2) + "s";
-				time += INTERVAL / 1000;
+				time += interval / INTERVAL;
 			}
 			var reset = function() {
 				var row = document.getElementById("row").value;
@@ -65,17 +66,34 @@
 				repaint();
 			}
 			var play = function() {
+				if(running) {
+					return;
+				}
 				timer = window.setInterval(ztep, interval);
+				running = true;
 			}
 			var pause = function() {
+				if(!running) {
+					return;
+				}
 				window.clearTimeout(timer);
+				running = false;
 			}
 			var sliderValue = function(value) {
+				if(running) {
+					return;
+				}
 				var rangeSpan = document.getElementById("rangeSpan");
 				var val = Math.round(parseInt(value) * .09 + 1);
 				interval = INTERVAL / val;
 				rangeSpan.innerHTML = (val) + "x";
-				console.log(val);
+			}
+			var playPause = function() {
+				if(running) {
+					pause();
+				} else {
+					play();
+				}
 			}
 		</script>
 	</head>
@@ -84,8 +102,7 @@
 		<input type="text" placeholder="cols" id="col"></input>
 		<input type="button" value="Reset" onclick="reset()"></input>
 		<input type="button" value="Step" onclick="ztep()"></input>
-		<input type="button" value="Play" onclick="play()"></input>
-		<input type="button" value="Pause" onclick="pause()"></input>
+		<input type="button" value="Play/Pause" onclick="playPause()"></input>
 		<input type="range" value="100" id="myRange" oninput="sliderValue(this.value)" onchange="sliderValue(this.value)"></input>
 		<span id="rangeSpan"></span>
 		<span id="time"></span>
