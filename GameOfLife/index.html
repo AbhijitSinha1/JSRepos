@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<title>GoL</title>
+		<style>
+		.cell {
+			border:   1px black solid;
+			float:    left;
+			position: absolute;
+		}
+		.black {
+			background-color: black;
+		}
+		.white {
+			background-color: white;
+		}
+		</style>
+		<script src = "GoL.js"></script>
+		<script src = "Cell.js"></script>
+		<script>
+			var game;
+			var timer;
+			var time;
+			var INTERVAL = 100;
+			var LIMIT = 50;
+			var interval = INTERVAL;
+			var generateBoard = function(row, col, cells) {
+				var size = LIMIT * 10 / Math.max(row, col);
+				var ret = "";
+				var k = 0;
+				for(var i = 0; i < row; i++) {
+					for(var j = 0; j < col; j++) {
+						var state = cells[k].getState();
+						ret += '<div class="'+(state?"black":"white")+' cell" style="color: '+(state?"white":"black")+';width: '+size+'px; height: '+size+'px; left: '+(j * size)+'px; top: '+(i * size + LIMIT)+'px;">'+cells[k].getId()+'</div>';
+						k++;
+					}
+					ret += "<br/>";
+				}
+				return ret;
+			}
+			var repaint = function() {
+				var div = document.getElementById("board");
+				var timeSpan = document.getElementById("time");
+				var row = game.getRows();
+				var col = game.getCols();
+				var cells = game.getCells();
+				var board = generateBoard(row, col, cells.map(function(cell) {return cell;}));//.map(function(cell) {return cell.getState();}));
+				div.innerHTML = board;
+				timeSpan.innerHTML = parseFloat(time).toFixed(2) + "s";
+				time += INTERVAL / 1000;
+			}
+			var reset = function() {
+				var row = document.getElementById("row").value;
+				var col = document.getElementById("col").value;
+				if(isNaN(row) || isNaN(col)) {
+					return;
+				}
+				row = parseInt(row);
+				col = parseInt(col);
+				game = new GoL(col, row);
+				time = 0;
+				repaint();
+			}
+			var ztep = function() {
+				game.step();
+				repaint();
+			}
+			var play = function() {
+				timer = window.setInterval(ztep, interval);
+			}
+			var pause = function() {
+				window.clearTimeout(timer);
+			}
+			var sliderValue = function(value) {
+				var rangeSpan = document.getElementById("rangeSpan");
+				var val = Math.round(parseInt(value) * .09 + 1);
+				interval = INTERVAL / val;
+				rangeSpan.innerHTML = (val) + "x";
+				console.log(val);
+			}
+		</script>
+	</head>
+	<body>
+		<input type="text" placeholder="rows" id="row"></input>
+		<input type="text" placeholder="cols" id="col"></input>
+		<input type="button" value="Reset" onclick="reset()"></input>
+		<input type="button" value="Step" onclick="ztep()"></input>
+		<input type="button" value="Play" onclick="play()"></input>
+		<input type="button" value="Pause" onclick="pause()"></input>
+		<input type="range" value="100" id="myRange" oninput="sliderValue(this.value)" onchange="sliderValue(this.value)"></input>
+		<span id="rangeSpan"></span>
+		<span id="time"></span>
+		<div id="board"></div>
+	</body>
+</html>
