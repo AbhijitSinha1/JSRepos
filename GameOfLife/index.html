@@ -31,7 +31,7 @@
 				for(var i = 0; i < row; i++) {
 					for(var j = 0; j < col; j++) {
 						var state = cells[k].getState();
-						ret += '<div class="'+(state?"black":"white")+' cell" style="color: '+(state?"white":"black")+';width: '+size+'px; height: '+size+'px; left: '+(j * size)+'px; top: '+(i * size + LIMIT)+'px;">'+cells[k].getId()+'</div>';
+						ret += '<div class="'+(state?"black":"white")+' cell" style="color: '+(state?"white":"black")+';width: '+size+'px; height: '+size+'px; left: '+(j * size)+'px; top: '+(i * size + LIMIT)+'px;"></div>';
 						k++;
 					}
 					ret += "<br/>";
